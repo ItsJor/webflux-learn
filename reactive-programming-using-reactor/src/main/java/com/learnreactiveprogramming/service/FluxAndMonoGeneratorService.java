@@ -31,6 +31,28 @@ public class FluxAndMonoGeneratorService {
         return Flux.fromIterable(List.of("Alex", "Ben", "Chloe")).filter( each -> each.contains("Al")).log();
     };
 
+    public Mono<List<String>> namesMonoFlatMap() {
+        return Mono.just("ALEX")
+                .map(String::toUpperCase)
+                .filter( s -> s.length() > 3)
+                .flatMap(this::splitStringMono); // split into "A", "L", "E", "X"
+    }
+
+    public Mono<List<String>> splitStringMono(String value) {
+        var charArray = value.split("");
+        var arr = List.of(charArray); // ALEX -> A, L , E, X
+        return Mono.just(arr);
+    }
+
+    // combining flux
+    public Flux<String> exploreConcat() {
+        // create two different flux
+        var abcFlux = Flux.just("A", "B", "C");
+        var defFlux = Flux.just("D", "E", "F");
+
+        return Flux.concat(abcFlux, defFlux);
+    }
+
     public static void main(String[] args) {
 
         FluxAndMonoGeneratorService fluxAndMonoGeneratorService = new FluxAndMonoGeneratorService();
@@ -41,23 +63,30 @@ public class FluxAndMonoGeneratorService {
         // by calling the method .subscribe, you will get access to the elements
         // all the elements in the flux will be sent in the form of stream, one by one
 
-        fluxAndMonoGeneratorService.namesFlux()
+//        fluxAndMonoGeneratorService.namesFlux()
+//            .subscribe(name -> {
+//                System.out.println("Flux name is " + name);
+//        });
+//        fluxAndMonoGeneratorService.nameMono()
+//            .subscribe(name -> {
+//                System.out.println("Mono name is " + name);
+//        });
+//        fluxAndMonoGeneratorService.namesFluxMapped()
+//            .subscribe(name -> {
+//        System.out.println("Mapped name is " + name);
+//        });
+//        fluxAndMonoGeneratorService.namesFluxFiltered()
+//            .subscribe(name -> {
+//                System.out.println("Filtered name is " + name);
+//        });
+//        fluxAndMonoGeneratorService.namesMonoFlatMap()
+//            .subscribe(name -> {
+//                System.out.println("Filtered name is " + name);
+//        });
+        fluxAndMonoGeneratorService.exploreConcat()
             .subscribe(name -> {
-                System.out.println("Flux name is " + name);
+                System.out.println("Name is " + name);
         });
-        fluxAndMonoGeneratorService.nameMono()
-            .subscribe(name -> {
-                System.out.println("Mono name is " + name);
-        });
-        fluxAndMonoGeneratorService.namesFluxMapped()
-            .subscribe(name -> {
-        System.out.println("Mapped name is " + name);
-        });
-        fluxAndMonoGeneratorService.namesFluxFiltered()
-            .subscribe(name -> {
-                System.out.println("Filtered name is " + name);
-        });
-
     }
 
 }
